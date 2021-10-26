@@ -64,7 +64,7 @@ class _SignInScreenState extends State<SignInScreen> {
         idToken: googleSignInAuthentication.idToken);
     await _auth.signInWithCredential(credential);
 
-    if (_auth.currentUser!.uid.isEmpty) {
+    if (_auth.currentUser!.uid.isNotEmpty) {
       Navigator.pushAndRemoveUntil(
           context,
           CupertinoPageRoute(builder: (BuildContext context) => const HomeScreen()),
