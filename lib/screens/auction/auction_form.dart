@@ -274,6 +274,7 @@ class _AuctionFormState extends State<AuctionForm> {
     return permissionGranted;
   }
 
+  //Show Image Picker Option Dialog
   Future _showPicker(context) async {
     showModalBottomSheet(
         context: context,
@@ -336,20 +337,23 @@ class _AuctionFormState extends State<AuctionForm> {
     }
   }
 
+  //Date Picker Dialog
   Future<void> _selectDateFromPicker(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: DateTime(DateTime.now().year - 20),
-        firstDate: DateTime(DateTime.now().year - 30),
-        lastDate: DateTime(DateTime.now().year));
+        initialDate: DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day),
+        firstDate: DateTime(DateTime.now().year),
+        lastDate: DateTime(DateTime.now().year + 3));
     if (picked != null) {
       setState(() {
         _auctionDateController.text =
-            "${picked.day}-${picked.month}-${picked.year} ";
+            "${picked.year}-${picked.month}-${picked.day} ";
       });
     }
   }
 
+  //Time Picker Dialog
   Future<void> _selectTimeFromPicker(BuildContext context) async {
     final TimeOfDay initialTime = TimeOfDay.now();
     TimeOfDay? selectedTime = await showTimePicker(

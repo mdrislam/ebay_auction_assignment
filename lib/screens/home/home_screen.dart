@@ -1,5 +1,5 @@
 import 'package:auction/const/app_colors.dart';
-import 'package:auction/screens/aucton/auction_form.dart';
+import 'package:auction/screens/auction/auction_form.dart';
 import 'package:auction/screens/home/component/menu_button_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -74,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           title: const Text(
             'eBay Auction',
             style: TextStyle(
-                color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+
+                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
           backgroundColor: AppColorsConst.deep_orrange,
