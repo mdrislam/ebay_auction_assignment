@@ -17,19 +17,19 @@ class UtillsMethod{
 
     if (now.day == fromDate.day) {
       if (now.hour >= fromDate.hour && now.minute >= fromDate.minute) {
-        print('Complete Over');
+       // print('Complete Over');
         returnString = 'Complete';
       } else {
         var run = " Hour: $hour Minute: $minute";
-        print(run);
+       // print(run);
         returnString =run;
       }
     } else if (now.day > fromDate.day) {
-      print('Complete Day is');
+     // print('Complete Day is');
       returnString = 'Complete';
     } else {
       var str = "Days: $days Hour: $hour Minute: $minute";
-      print('Running: $str');
+     // print('Running: $str');
       returnString = str;
     }
 

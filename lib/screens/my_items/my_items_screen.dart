@@ -1,62 +1,111 @@
 import 'package:auction/const/app_colors.dart';
 import 'package:auction/screens/details/details_screen.dart';
+import 'package:auction/screens/home/component/auction_item_card.dart';
 import 'package:auction/utills/utills_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import 'auction_item_card.dart';
-
-class AutionItems extends StatefulWidget {
-  AutionItems({
-    Key? key,
-    required this.products,
-  }) : super(key: key);
-
-  final List products;
+class MyItemsScreen extends StatefulWidget {
+  const MyItemsScreen({Key? key}) : super(key: key);
 
   @override
-  State<AutionItems> createState() => _AutionItemsState();
+  _MyItemsScreenState createState() => _MyItemsScreenState();
 }
 
-class _AutionItemsState extends State<AutionItems> {
+class _MyItemsScreenState extends State<MyItemsScreen> {
+  List products = [];
+  final _fireStoreInstanse = FirebaseFirestore.instance;
+
+  fetchProductsData() async {
+    QuerySnapshot qn = await _fireStoreInstanse
+        .collection("Auction_data")
+        .where('uId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    setState(() {
+      products.clear();
+      for (int i = 0; i < qn.docs.length; i++) {
+        products.add({
+          "tblId": qn.docs[i]['tblId'],
+          "uId": qn.docs[i]['uId'],
+          "name": qn.docs[i]['name'],
+          "description": qn.docs[i]['description'],
+          "photo": qn.docs[i]['photo'],
+          "minBidPrice": qn.docs[i]['minBidPrice'],
+          "date": qn.docs[i]['date'],
+          "time": qn.docs[i]['time'],
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    fetchProductsData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: ListView.builder(
-        itemCount: widget.products.length,
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (context, index) => AuctionItemCard(
-          product: widget.products[index],
-          press: () {
-            if (UtillsMethod.getEndDate(widget.products[index]["date"] +
-                        widget.products[index]["time"])
-                    .toString() ==
-                'Complete') {
-              print('Bid Is Complete');
-              showWinnerDialog(context, widget.products[index]["tblId"]);
-            } else {
-              print('Bid Is Running');
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (_) =>
-                      DetailsScreen(auctionData: widget.products[index]),
-                ),
-              ).then(
-                (value) {},
-              );
-            }
-          },
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColorsConst.deep_orrange,
+            title: const Text(
+              ' My Posted Items ',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          body: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: ListView.builder(
+              itemCount: products.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+
+              itemBuilder: (context, index) => AuctionItemCard(
+                  product: products[index],
+                  press: () {
+                    if (UtillsMethod.getEndDate(products[index]["date"] +
+                                products[index]["time"])
+                            .toString() ==
+                        'Complete') {
+                      print('Bid Is Complete');
+                      showWinnerDialog(context, products[index]["tblId"]);
+                    } else {
+                      print('Bid Is Running');
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (_) =>
+                              DetailsScreen(auctionData: products[index]),
+                        ),
+                      ).then(
+                        (value) {},
+                      );
+                    }
+                  }),
+            ),
+          ),
         ),
       ),
     );
   }
 
+  Future<bool> onWillPop() async {
+    Navigator.of(context).pop(true);
+    return true;
+  }
+
   //Pick Image From Gallary
-  Future<void> showWinnerDialog(BuildContext context, String tblId,) async {
+  Future<void> showWinnerDialog(
+    BuildContext context,
+    String tblId,
+  ) async {
     List bidingDataList = [];
     bidingDataList.clear();
     final _fireStoreInstanse = FirebaseFirestore.instance;
